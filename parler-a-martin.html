@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Parler à Martin</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    input {
+      width: 60%;
+      padding: 10px;
+      font-size: 16px;
+    }
+    button {
+      padding: 10px 20px;
+      font-size: 16px;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+  <h2>Parle à Martin 🎤</h2>
+  <input type="text" id="spokenText" placeholder="Ton message s'affichera ici..." />
+  <br>
+  <button onclick="startRecognition()">🎙️ Parler</button>
+
+  <script>
+    function startRecognition() {
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+      if (!SpeechRecognition) {
+        alert("Désolé, ton navigateur ne supporte pas la reconnaissance vocale.");
+        return;
+      }
+
+      const recognition = new SpeechRecognition();
+      recognition.lang = "fr-CA";
+      recognition.interimResults = false;
+      recognition.continuous = false;
+
+      recognition.onresult = function(event) {
+        const transcript = event.results[0][0].transcript;
+        document.getElementById("spokenText").value = transcript;
+
+        // Envoie vers le parent Wix si intégré dans un iframe
+        if (window.parent) {
+          window.parent.postMessage(transcript, "*");
+        }
+      };
+
+      recognition.onerror = function(event) {
+        alert("Erreur vocale : " + event.error);
+      };
+
+      recognition.start();
+    }
+  </script>
+</body>
+</html>
